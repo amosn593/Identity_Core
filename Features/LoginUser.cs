@@ -2,7 +2,6 @@
 using IdentityCoreDemo.Database;
 using IdentityCoreDemo.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -58,8 +57,7 @@ public class LoginUser
             SignInManager<ApplicationUser> signInManager, HttpContext context) =>
         {
             
-            // Let the built-in Google handler manage /signin-google callback
-            var redirectUrl = $"/signin-google-callback?redirectUrl={Uri.EscapeDataString(returnUrl ?? "/")}"; // linkGenerator.GetPathByName(context, "GoogleLoginCallback") + $"?redirectUrl={returnUrl}"; // $"/signin-google-callback?redirectUrl={Uri.EscapeDataString(returnUrl ?? "/")}";
+            var redirectUrl = linkGenerator.GetPathByName(context, "CallBackUrlGoogle") + $"?redirectUrl={returnUrl}";
 
             var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
             
@@ -140,13 +138,11 @@ public class LoginUser
                 UserId = user!.Id
             };
 
-
             var NewredirectUrl = $"{redirectUrl}/?token={Token}&refresh={Refresh}";
-
 
             return Results.Redirect(NewredirectUrl);
 
-        }).WithName("GoogleCallBackUrl");
+        }).WithName("CallBackUrlGoogle");
 
     }
 }
